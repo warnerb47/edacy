@@ -103,4 +103,4 @@ Nous allons utiliser **AWS Step Functions** pour orchestrer les transactions de 
 
 ### API Gateway : Java + GraphQL
 
-Le front communiquera avec l’API Gateway en utilisant **Java** avec **GraphQL**, qui permet d’éviter l’over-fetching, de bénéficier d’un schéma typé, et de souscrire aux mises à jour de données en temps réel.
+Le front communiquera avec l’API Gateway en utilisant du **GraphQL**, qui permet d’éviter l’over-fetching, de bénéficier d’un schéma typé, et de souscrire aux mises à jour de données en temps réel.
