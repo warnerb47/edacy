@@ -46,14 +46,20 @@ Un moteur de recherche améliore l'expérience utilisateur grâce aux auto-compl
 La notification est un point important pour cette plateform c'est pourquoi on a opter une infrastructure de notification qui regroupe tous les canaux: in-app, email, chat, push-notification, SMS etc. **Novu** est choix pertinent puisqu'il est opensource et permet de définir des workflows qui peuvent être vu comme des pipelines CI/CD pour la notification ce qui rend les notifications pertinantes, customisées et ciblées.
 
 ### service de reservation: go + PostgreSQL
-Le service de réservation 
+Le service de réservation fait parti des microservices critiquent qui peuvent connaitre des pics de connexion il doit être performant et scalable c'est pourquoi on utilise le langage go qui est trés performant. Une base de données postgres permet d'appliquer des contrôles d'intégrité ce qui renforce la cohérance des données.
 
-### composant UI partagés: storybook
-### application mobile :  Kotlin et  swift
-### application web: landing page (angular SSR) 
-### application web: admin-dashboard (angular)
 ### service de paiement : Java + stripe + PostgreSQL
-### service de facturation : Java + PostgreSQL
+Le service de paiement est un microservice trés sensible c'est pourquoi on a opté pour java et prostgres des technologies robustes, largement utilisés et trés facile à intégrer avec des solutions existants. **Stripe** est une infrastructure financière trés flexible, facile à prendre en main et adapté pour notre modéle economique.
+
+### application web: landing page (angular SSR)
+Pour le landing page il faut optimiser nos métriques **Core Web Vitals** c'est pourquoi on va utiliser une technologie qui intégre le SSR (Server side rendering), le lazy loading, le caching ce qui est disponible avec **Angular**. L'utilisation des CDN permet aussi d'améliorer les performances.
+
+### application web: admin-dashboard (angular)
+L'interface des organisateurs sera une application web qui peut grandir en complexité (dashboard, gestion de comptes, notifications, comptabilité, etc) il faut utiliser une technologie qui a un ecosystéme complet, une structure rigoureuse et un state management robuste. **Angular** est un bon puisqu'il répond a toutes ces critéres.
+
+### application mobile :  Kotlin et  swift
+
+
 ### system de monitoring: AWS monitoring 
 ### system de securite : AWS security 
 ### analytics:  Google Analytics 
