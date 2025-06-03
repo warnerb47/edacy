@@ -75,3 +75,9 @@ AWS met à disposition plusieurs service pour la sécurité à plusieurs niveau 
 ### CI/CD
 Pour le CI on va utiliser **GitHub Actions** qui trés puissant et bénéficie d'une large communauté. La flexibilité qu'il propose comme pouvoir réagir à la création d'un issue n'est pas retrouvé dans les autres outils d'intégrations.
 Pour le CD on va utiliser **AWS EKS** qui est trés compatible à nos microservices conteneurisés ce qui va déchargé l'équipe de la maintenance d'un cluster
+
+### Saga Orchestrator: AWS Step Functions
+On va utiliser **AWS Step Functions** pour orchestrer les transactions saga. On va éviter les moteurs de workflow comme Camunda à cause de leur lourdeur. Mettre en place un microservice comme orchestrateur est une option mais ce dernier peut être trés complexe et error prone.
+
+### API Gateway: GraphQL
+Le front va communiquer avec le gateway en utilisant **graphQL** qui permet d'eviter l'over-fetching, d'avoir shema typé, et de pourvoir souscrire aux mise à jour de données à temps réel.
