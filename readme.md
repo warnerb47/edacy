@@ -11,10 +11,11 @@ En se basant sur les hypothéses posés (budget conséquent et maturité de l'é
 - Strategie de décomposition: décomposition par domaine métier (capability-based)
 - Strategie de gestion des données:
     * Base de données par service
-    * API composition pour la récupération des données à travers plusieurs microservice
-    * Saga orchestration pour maintenir la consistance des données à travers plusieurs microservice
+    * Pour les requêtes cross-service: API composition + Saga orchestration
     * Style de communication entre microservice: Messaging avec l'Idempotent consumer
-
+- Strategie de deployment:
+    * service per container
+    * canary releases
 
 ## 🛠️Composants et Choix de technology
 
@@ -36,7 +37,7 @@ En se basant sur les hypothéses posés (budget conséquent et maturité de l'é
 A mon avis les géants du cloud AWS, Azure, GCP répondent tous à nos besoins. Le choix porte sur le type d'infrastrucute on-premise, cloud ou hybride. Pour notre cas d'étude on va utiliser le cloud avec AWS pour sa flexibilité. Le multicloud est une autre option qu'on ne va pas utiliser pour éviter de tout gérer sois même puisque le budget nous permet d'avoir ce luxe.
 
 ### Authentification : keycloak
-Puisqu'il s'agit d'un plateform de réservation d’événements il est important de faciliter l'accés à nos service tout en maintenant un bon niveau de sécurité. Il nous faut une technologie qui implémente **oaut2.0** pour permettre à nos utilisateurs de créer un compte et de se connecter à travers leurs comptes existants sur d'autres plateformes. **Keycloak** est un choix incontournable grace à sa robustesse et sa grande communauté.
+Puisqu'il s'agit d'un plateform de réservation d’événements il est important de faciliter l'accés à nos service tout en maintenant un bon niveau de sécurité. Il nous faut une technologie qui implémente **oaut2.0** pour permettre à nos utilisateurs de créer un compte et de se connecter à travers leurs comptes existants sur d'autres plateformes. **Keycloak** est un choix incontournable grace à sa robustesse et sa grande communauté qui surpasse des alternatives comme **AWS Cognito**.
 
 ### Moteur de recherche : Typesense
 Un moteur de recherche améliore l'expérience utilisateur grâce aux auto-completions, la recherche poussé comme le Geo-search pour voir les événements à proximité, la Semantic search  etc. Notre choix ce porte sur **Typesense** puisqu'il est opensource et plus léger que la pluspart des moteurs de recherche comme elasticsearch et propse des fonctionnalités intéressantes comme le Long-term memory pour les LLMs et la visualisation des donnés comme les graphes et les tableaux. 
@@ -54,7 +55,7 @@ Le service de paiement est un microservice trés sensible c'est pourquoi on a op
 Pour le landing page il faut optimiser nos métriques **Core Web Vitals** c'est pourquoi on va utiliser une technologie qui intégre le SSR (Server side rendering), le lazy loading, le caching ce qui est disponible avec **Angular**. L'utilisation des CDN permet aussi d'améliorer les performances.
 
 ### application web: admin-dashboard (angular)
-L'interface des organisateurs sera une application web qui peut grandir en complexité (dashboard, gestion de comptes, notifications, comptabilité, etc) il faut utiliser une technologie qui a un ecosystéme complet, une structure rigoureuse et un state management robuste. **Angular** est un bon puisqu'il répond a toutes ces critéres.
+L'interface des organisateurs sera une application web qui peut grandir en complexité (dashboard, gestion de comptes, notifications, comptabilité, etc) il faut utiliser une technologie qui a un ecosystéme complet, une structure rigoureuse et un state management robuste. **Angular** est un bon choix puisqu'il répond a toutes ces critéres contraire à des alternatives comme **React** qui n'offre pas une structure rigoureuse et laisses le choix au développeur.
 
 ### application mobile :  Flutter
 L'application mobile permettra de reserver pour un évènement et sera pour le grand public l'idéal c'est quelle tourne sur le maximum de plateforme (IOS, Android, HarmonyOS, etc). C'est pourquoi on a choisi **Flutter**.
@@ -62,9 +63,14 @@ L'application mobile permettra de reserver pour un évènement et sera pour le g
 ### Application web Datavisualization: Metabase
 Pour l'interface des organisateurs il est interessant de mettre en place des dashboards pour la prise de décision. **Metabase** est un bon outil opensource pour générer des dashboards il est trés léger et peut se connecter à plusieurs source de données.
 
+### system de cache: Redis:
+Pour les services métiers il faut mettre en place un système de cache. Notre choix sera **Redis** qui est flexible, performant et dispose d'une grande communauté.
+
 ### system de monitoring avec AWS
 Pour le monitoring on va utiliser CloudWatch qui est mis à disposition par AWS. Le but c'est d'éviter de tout faire sois même en délégant le monitoring au provider Cloud. **CloudWatch** offre beaucoup d'avantage comme l'automatisation du scaling grace aux seuils et aux actions, le systeme d'alerte, etc.
 
 ### Securite de l'infrastructure avec AWS
 AWS met à disposition plusieurs service pour la sécurité à plusieurs niveau (application, reseau, accés, etc) parmi les outils essentiels on peut cité **AWS WAF**, AWS KMS, et AWS Secrets Manager.
 
+### CI/CD et Déploiement
+Pour le CI/CD **GitHub Actions**
