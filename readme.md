@@ -23,15 +23,14 @@ En se basant sur les hypothéses posés (budget conséquent et maturité de l'é
 | **Cloud Provider**       | AWS                                    |
 | **Authentification**     | Keycloak                               |
 | **Moteur de recherche**  | Typesense                              |
-| **Service Notification** | Node.js + PostgreSQL                   |
-| **Service Réservation**  | Node.js + PostgreSQL                   |
+| **Service Notification** | Novu                                   |
+| **Service Réservation**  | Go + PostgreSQL                        |
 | **Service Paiement**     | Java + Stripe + PostgreSQL             |
-| **Service Facturation**  | Java + PostgreSQL                      |
-| **Application Mobile**   | Kotlin (Android), Swift (iOS)          |
+| **Application Mobile**   | Flutter                                |
 | **Application Web**      | Angular SSR (landing), Angular (admin) |
-| **Analytics**            | Google Analytics                       |
+| **Data visualization**   | Metabase                               |
 | **Monitoring**           | AWS CloudWatch                         |
-| **Sécurité**             | AWS Security services                  |
+| **Sécurité**             | AWS WAF                                |
 
 ### Provider Cloud : AWS
 A mon avis les géants du cloud AWS, Azure, GCP répondent tous à nos besoins. Le choix porte sur le type d'infrastrucute on-premise, cloud ou hybride. Pour notre cas d'étude on va utiliser le cloud avec AWS pour sa flexibilité. Le multicloud est une autre option qu'on ne va pas utiliser pour éviter de tout gérer sois même puisque le budget nous permet d'avoir ce luxe.
@@ -57,9 +56,15 @@ Pour le landing page il faut optimiser nos métriques **Core Web Vitals** c'est 
 ### application web: admin-dashboard (angular)
 L'interface des organisateurs sera une application web qui peut grandir en complexité (dashboard, gestion de comptes, notifications, comptabilité, etc) il faut utiliser une technologie qui a un ecosystéme complet, une structure rigoureuse et un state management robuste. **Angular** est un bon puisqu'il répond a toutes ces critéres.
 
-### application mobile :  Kotlin et  swift
+### application mobile :  Flutter
+L'application mobile permettra de reserver pour un évènement et sera pour le grand public l'idéal c'est quelle tourne sur le maximum de plateforme (IOS, Android, HarmonyOS, etc). C'est pourquoi on a choisi **Flutter**.
 
+### Application web Datavisualization: Metabase
+Pour l'interface des organisateurs il est interessant de mettre en place des dashboards pour la prise de décision. **Metabase** est un bon outil opensource pour générer des dashboards il est trés léger et peut se connecter à plusieurs source de données.
 
-### system de monitoring: AWS monitoring 
-### system de securite : AWS security 
-### analytics:  Google Analytics 
+### system de monitoring avec AWS
+Pour le monitoring on va utiliser CloudWatch qui est mis à disposition par AWS. Le but c'est d'éviter de tout faire sois même en délégant le monitoring au provider Cloud. **CloudWatch** offre beaucoup d'avantage comme l'automatisation du scaling grace aux seuils et aux actions, le systeme d'alerte, etc.
+
+### Securite de l'infrastructure avec AWS
+AWS met à disposition plusieurs service pour la sécurité à plusieurs niveau (application, reseau, accés, etc) parmi les outils essentiels on peut cité **AWS WAF**, AWS KMS, et AWS Secrets Manager.
+
