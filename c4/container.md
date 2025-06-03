@@ -27,11 +27,15 @@ C4Container
         
         Container(search_service, "Service Recherche", "Typesense", "Recherche d'événements")
         
+        Container(cache_service, "Service de Cache", "Redis", "cahe des données")
+        
         Container(saga_orchestrator, "Orchestrateur Saga", "AWS Step Functions", "Coordonne les transactions distribuées")
     }
 
     System_Ext(stripe, "Stripe", "Passerelle de paiement")
-    System_Ext(sms_provider, "Fournisseur SMS", "Twilio")
+    System_Ext(sms, "Fournisseur SMS", "Twilio")
+    System_Ext(oauth, "Providers OAuth", "Google, Facebook, Apple pour l'authentification")
+    System_Ext(email, "Fournisseur Email", "Envoi d'emails transactionnels")
 
     Rel(visiteur, web_app, "consulter les événements", "HTTPS")
     Rel(utilisateur, web_app, "Réserve des événements", "HTTPS")
@@ -49,17 +53,26 @@ C4Container
     Rel(api_gateway, payment_service, "récupérer transactions", "GraphQL")
     Rel(api_gateway, notif_service, "notifier", "REST")
     Rel(api_gateway, auth_service, "s'authentifier", "REST")
+    Rel(api_gateway, search_service, "rechercher", "REST")
+    Rel(api_gateway, cache_service, "Read/Write", "GraphQL")
+
+    Rel(auth_service, oauth, "s'authentifier", "REST")
     
-    Rel(saga_orchestrator, payment_service, "Déclenche paiement", "gRPC")
-    Rel(payment_service, stripe, "Processus paiement", "API")
+    Rel(saga_orchestrator, payment_service, "Déclenche paiement", "GraphQL")
+    Rel(saga_orchestrator, cache_service, "Read/Write", "GraphQL")
+    Rel(payment_service, stripe, "Processus paiement", "REST")
     
-    Rel(saga_orchestrator, notif_service, "Déclenche notification", "gRPC")
-    Rel(notif_service, sms_provider, "Envoie SMS", "API")
+    Rel(saga_orchestrator, notif_service, "Déclenche notification", "REST")
+    Rel(notif_service, sms, "Envoie SMS", "REST")
+    Rel(notif_service, email, "Envoie Email", "REST")
     
-    Rel(saga_orchestrator, booking_service, "Confirme réservation", "gRPC")
+    Rel(saga_orchestrator, booking_service, "Confirme réservation", "GraphQL")
     
     Rel(booking_service, booking_db, "Read/Write", "SQL")
     Rel(payment_service, payment_db, "Read/Write", "SQL")
+    
+    Rel(booking_service, cache_service, "Read/Write", "GraphQL")
+    Rel(payment_service, cache_service, "Read/Write", "GraphQL")
 
     UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
