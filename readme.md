@@ -67,10 +67,11 @@ Pour l'interface des organisateurs il est interessant de mettre en place des das
 Pour les services métiers il faut mettre en place un système de cache. Notre choix sera **Redis** qui est flexible, performant et dispose d'une grande communauté.
 
 ### system de monitoring avec AWS
-Pour le monitoring on va utiliser CloudWatch qui est mis à disposition par AWS. Le but c'est d'éviter de tout faire sois même en délégant le monitoring au provider Cloud. **CloudWatch** offre beaucoup d'avantage comme l'automatisation du scaling grace aux seuils et aux actions, le systeme d'alerte, etc.
+Pour le monitoring on va utiliser **CloudWatch** qui est mis à disposition par AWS. Le but c'est d'éviter de tout faire sois même en délégant une partie du monitoring au provider Cloud. **CloudWatch** offre beaucoup d'avantages comme l'automatisation du scaling grace aux seuils et aux actions, le systeme d'alerte, etc. **Prometheus/Grafana** seront egalement utilisé pour combler les limites de **CloudWatch**.
 
 ### Securite de l'infrastructure avec AWS
 AWS met à disposition plusieurs service pour la sécurité à plusieurs niveau (application, reseau, accés, etc) parmi les outils essentiels on peut cité **AWS WAF**, AWS KMS, et AWS Secrets Manager.
 
-### CI/CD et Déploiement
-Pour le CI/CD **GitHub Actions**
+### CI/CD
+Pour le CI on va utiliser **GitHub Actions** qui trés puissant et bénéficie d'une large communauté. La flexibilité qu'il propose comme pouvoir réagir à la création d'un issue n'est pas retrouvé dans les autres outils d'intégrations.
+Pour le CD on va utiliser **AWS EKS** qui est trés compatible à nos microservices conteneurisés ce qui va déchargé l'équipe de la maintenance d'un cluster
