@@ -1,23 +1,28 @@
 # 🏗️ Proposition d’architecture — Plateforme de réservation d’événements
+
 ## 📌 Hypothèses
-La proposition d'architecture logiciel dépends de plusieurs facteurs le budget, le nombre d'utilisateurs, la taile et la maturité de l'équipe etc. Dans notre cas d'étude on va faire les suppositions suivantes:
-- nous disposons d'un budget conséquent
-- nous comptons plusieurs milliers d’utilisateurs
-- nous disposons d'une équipe de 20 à 30 ingénieurs de niveau intermédiaire ou expérimenté
+
+La proposition d'architecture logicielle dépend de plusieurs facteurs : le budget, le nombre d'utilisateurs, la taille et la maturité de l'équipe, etc. Dans notre cas d'étude, nous allons faire les suppositions suivantes :
+- nous disposons d'un budget conséquent ;
+- nous comptons plusieurs milliers d’utilisateurs ;
+- nous disposons d'une équipe de 20 à 30 ingénieurs de niveau intermédiaire ou expérimenté.
 
 ## 🧩 Architecture choisie : Microservices
-En se basant sur les hypothéses posés (budget conséquent et maturité de l'équipe) nous pouvons nous permettre d'utiliser une **architecture microservice** pour répondre aux contraintes liés au nombre d'utilisateurs.
-### Description détaillé de notre architecture microservice
-- Strategie de décomposition: décomposition par domaine métier (capability-based)
-- Strategie de gestion des données:
-    * Base de données par service
-    * Pour les requêtes cross-service: API composition + Saga orchestration
-    * Style de communication entre microservice: Messaging avec l'Idempotent consumer
-- Strategie de deployment:
-    * service per container
-    * canary releases
 
-## 🛠️Composants et Choix de technology
+En nous basant sur les hypothèses posées (budget conséquent et maturité de l'équipe), nous pouvons nous permettre d'utiliser une **architecture microservices** pour répondre aux contraintes liées au nombre d'utilisateurs.
+
+### Description détaillée de notre architecture microservices
+
+- Stratégie de décomposition : décomposition par domaine métier (capability-based)
+- Stratégie de gestion des données :
+  * Base de données par service
+  * Pour les requêtes inter-services : API composition + orchestration de Saga
+  * Style de communication entre microservices : messaging avec consommateur idempotent
+- Stratégie de déploiement :
+  * un service par conteneur
+  * canary releases
+
+## 🛠️ Composants et choix technologiques
 
 | Composant                | Technologies/Services                  |
 | ------------------------ | -------------------------------------- |
@@ -33,51 +38,67 @@ En se basant sur les hypothéses posés (budget conséquent et maturité de l'é
 | **Monitoring**           | AWS CloudWatch                         |
 | **Sécurité**             | AWS WAF                                |
 
-### Provider Cloud : AWS
-A mon avis les géants du cloud AWS, Azure, GCP répondent tous à nos besoins. Le choix porte sur le type d'infrastrucute on-premise, cloud ou hybride. Pour notre cas d'étude on va utiliser le cloud avec AWS pour sa flexibilité. Le multicloud est une autre option qu'on ne va pas utiliser pour éviter de tout gérer sois même puisque le budget nous permet d'avoir ce luxe.
+### Cloud provider : AWS
 
-### Authentification : keycloak
-Puisqu'il s'agit d'un plateform de réservation d’événements il est important de faciliter l'accés à nos service tout en maintenant un bon niveau de sécurité. Il nous faut une technologie qui implémente **oaut2.0** pour permettre à nos utilisateurs de créer un compte et de se connecter à travers leurs comptes existants sur d'autres plateformes. **Keycloak** est un choix incontournable grace à sa robustesse et sa grande communauté qui surpasse des alternatives comme **AWS Cognito**.
+À mon avis, les géants du cloud (AWS, Azure, GCP) répondent tous à nos besoins. Le choix dépend du type d’infrastructure : on-premise, cloud ou hybride. Pour notre cas d’étude, nous allons utiliser le cloud avec AWS pour sa flexibilité. Le multi-cloud est une autre option que nous n'allons pas adopter afin d'éviter de tout gérer nous-mêmes, puisque notre budget nous permet d’en déléguer la gestion.
+
+### Authentification : Keycloak
+
+Puisqu’il s’agit d’une plateforme de réservation d’événements, il est important de faciliter l’accès à nos services tout en maintenant un bon niveau de sécurité. Il nous faut une technologie qui implémente **OAuth2.0**, pour permettre à nos utilisateurs de créer un compte ou de se connecter via leurs comptes existants sur d’autres plateformes. **Keycloak** est un choix incontournable grâce à sa robustesse et sa grande communauté, surpassant des alternatives comme **AWS Cognito**.
 
 ### Moteur de recherche : Typesense
-Un moteur de recherche améliore l'expérience utilisateur grâce aux auto-completions, la recherche poussé comme le Geo-search pour voir les événements à proximité, la Semantic search  etc. Notre choix ce porte sur **Typesense** puisqu'il est opensource et plus léger que la pluspart des moteurs de recherche comme elasticsearch et propse des fonctionnalités intéressantes comme le Long-term memory pour les LLMs et la visualisation des donnés comme les graphes et les tableaux. 
 
-### Service de notification: Novu
-La notification est un point important pour cette plateform c'est pourquoi on a opter une infrastructure de notification qui regroupe tous les canaux: in-app, email, chat, push-notification, SMS etc. **Novu** est choix pertinent puisqu'il est opensource et permet de définir des workflows qui peuvent être vu comme des pipelines CI/CD pour la notification ce qui rend les notifications pertinantes, customisées et ciblées.
+Un moteur de recherche améliore l’expérience utilisateur grâce à l’auto-complétion, la recherche poussée (Geo-search pour les événements à proximité, Semantic Search, etc.). Notre choix se porte sur **Typesense** car il est open source, plus léger que la plupart des moteurs de recherche comme Elasticsearch, et propose des fonctionnalités intéressantes comme la mémoire à long terme pour les LLMs et la visualisation des données (graphiques, tableaux).
 
-### service de reservation: go + PostgreSQL
-Le service de réservation fait parti des microservices critiquent qui peuvent connaitre des pics de connexion il doit être performant et scalable c'est pourquoi on utilise le langage go qui est trés performant. Une base de données postgres permet d'appliquer des contrôles d'intégrité ce qui renforce la cohérance des données.
+### Service de notification : Novu
 
-### service de paiement : Java + stripe + PostgreSQL
-Le service de paiement est un microservice trés sensible c'est pourquoi on a opté pour java et prostgres des technologies robustes, largement utilisés et trés facile à intégrer avec des solutions existants. **Stripe** est une infrastructure financière trés flexible, facile à prendre en main et adapté pour notre modéle economique.
+La notification est un point essentiel pour cette plateforme. C’est pourquoi nous avons opté pour une infrastructure qui regroupe tous les canaux : in-app, email, chat, push notification, SMS, etc. **Novu** est un choix pertinent, car il est open source et permet de définir des workflows assimilables à des pipelines CI/CD pour la notification, rendant les alertes pertinentes, personnalisées et ciblées.
 
-### application web: landing page (angular SSR)
-Pour le landing page il faut optimiser nos métriques **Core Web Vitals** c'est pourquoi on va utiliser une technologie qui intégre le SSR (Server side rendering), le lazy loading, le caching ce qui est disponible avec **Angular**. L'utilisation des CDN permet aussi d'améliorer les performances.
+### Service de réservation : Go + PostgreSQL
 
-### application web: admin-dashboard (angular)
-L'interface des organisateurs sera une application web qui peut grandir en complexité (dashboard, gestion de comptes, notifications, comptabilité, etc) il faut utiliser une technologie qui a un ecosystéme complet, une structure rigoureuse et un state management robuste. **Angular** est un bon choix puisqu'il répond a toutes ces critéres contraire à des alternatives comme **React** qui n'offre pas une structure rigoureuse et laisses le choix au développeur.
+Le service de réservation est un microservice critique pouvant connaître des pics de connexions. Il doit donc être performant et scalable. C’est pourquoi nous utilisons le langage **Go**, reconnu pour sa performance. Une base de données **PostgreSQL** permet d’appliquer des contrôles d’intégrité, renforçant ainsi la cohérence des données.
 
-### application mobile :  Flutter
-L'application mobile permettra de reserver pour un évènement et sera pour le grand public l'idéal c'est quelle tourne sur le maximum de plateforme (IOS, Android, HarmonyOS, etc). C'est pourquoi on a choisi **Flutter**.
+### Service de paiement : Java + Stripe + PostgreSQL
 
-### Application web Datavisualization: Metabase
-Pour l'interface des organisateurs il est interessant de mettre en place des dashboards pour la prise de décision. **Metabase** est un bon outil opensource pour générer des dashboards il est trés léger et peut se connecter à plusieurs source de données.
+Le service de paiement est un microservice très sensible. Nous avons opté pour **Java** et **PostgreSQL**, des technologies robustes, largement utilisées et faciles à intégrer avec des solutions existantes. **Stripe** est une infrastructure financière très flexible, facile à prendre en main, et bien adaptée à notre modèle économique.
 
-### system de cache: Redis:
-Pour les services métiers il faut mettre en place un système de cache. Notre choix sera **Redis** qui est flexible, performant et dispose d'une grande communauté.
+### Application web : landing page (Angular SSR)
 
-### system de monitoring avec AWS
-Pour le monitoring on va utiliser **CloudWatch** qui est mis à disposition par AWS. Le but c'est d'éviter de tout faire sois même en délégant une partie du monitoring au provider Cloud. **CloudWatch** offre beaucoup d'avantages comme l'automatisation du scaling grace aux seuils et aux actions, le systeme d'alerte, etc. **Prometheus/Grafana** seront egalement utilisé pour combler les limites de **CloudWatch**.
+Pour la landing page, il faut optimiser les métriques **Core Web Vitals**. Nous allons donc utiliser une technologie intégrant le SSR (Server Side Rendering), le lazy loading, le caching, etc., ce qui est disponible avec **Angular**. L’utilisation de CDN permet également d’améliorer les performances.
 
-### Securite de l'infrastructure avec AWS
-AWS met à disposition plusieurs service pour la sécurité à plusieurs niveau (application, reseau, accés, etc) parmi les outils essentiels on peut cité **AWS WAF**, AWS KMS, et AWS Secrets Manager.
+### Application web : admin dashboard (Angular)
+
+L’interface des organisateurs sera une application web pouvant croître en complexité (dashboard, gestion de comptes, notifications, comptabilité, etc.). Il nous faut une technologie avec un écosystème complet, une structure rigoureuse, et un state management robuste. **Angular** est un bon choix car il répond à tous ces critères, contrairement à des alternatives comme **React**, qui n’offrent pas de structure rigide et laissent ces choix au développeur.
+
+### Application mobile : Flutter
+
+L’application mobile permettra de réserver des événements et sera destinée au grand public. L’idéal est qu’elle fonctionne sur un maximum de plateformes (iOS, Android, HarmonyOS, etc.). C’est pourquoi nous avons choisi **Flutter**.
+
+### Application web de datavisualisation : Metabase
+
+Pour l’interface des organisateurs, il est pertinent de mettre en place des dashboards pour la prise de décision. **Metabase** est un bon outil open source pour générer des dashboards. Il est très léger et peut se connecter à plusieurs sources de données.
+
+### Système de cache : Redis
+
+Pour les services métier, il est nécessaire de mettre en place un système de cache. Notre choix se porte sur **Redis**, qui est flexible, performant et dispose d’une grande communauté.
+
+### Système de monitoring : AWS + Prometheus/Grafana
+
+Pour le monitoring, nous allons utiliser **CloudWatch**, proposé par AWS. L’objectif est de déléguer une partie du monitoring au cloud provider. **CloudWatch** offre de nombreux avantages comme l’automatisation du scaling via des seuils et actions, le système d’alerte, etc. **Prometheus** et **Grafana** seront également utilisés pour pallier les limites de CloudWatch.
+
+### Sécurité de l’infrastructure : AWS
+
+AWS met à disposition plusieurs services de sécurité à différents niveaux (application, réseau, accès, etc.). Parmi les outils essentiels, on peut citer **AWS WAF**, **AWS KMS**, et **AWS Secrets Manager**.
 
 ### CI/CD
-Pour le CI on va utiliser **GitHub Actions** qui trés puissant et bénéficie d'une large communauté. La flexibilité qu'il propose comme pouvoir réagir à la création d'un issue n'est pas retrouvé dans les autres outils d'intégrations.
-Pour le CD on va utiliser **AWS EKS** qui est trés compatible à nos microservices conteneurisés ce qui va déchargé l'équipe de la maintenance d'un cluster
 
-### Saga Orchestrator: AWS Step Functions
-On va utiliser **AWS Step Functions** pour orchestrer les transactions saga. On va éviter les moteurs de workflow comme Camunda à cause de leur lourdeur. Mettre en place un microservice comme orchestrateur est une option mais ce dernier peut être trés complexe et error prone.
+Pour le CI, nous allons utiliser **GitHub Actions**, très puissant et bénéficiant d’une large communauté. Sa flexibilité, comme la possibilité de réagir à la création d’une issue, n’est pas toujours retrouvée dans d'autres outils d'intégration.  
+Pour le CD, nous utiliserons **AWS EKS**, très compatible avec nos microservices conteneurisés, ce qui décharge l’équipe de la maintenance du cluster.
 
-### API Gateway: GraphQL
-Le front va communiquer avec le gateway en utilisant **graphQL** qui permet d'eviter l'over-fetching, d'avoir shema typé, et de pourvoir souscrire aux mise à jour de données à temps réel.
+### Orchestration de Sagas : AWS Step Functions
+
+Nous allons utiliser **AWS Step Functions** pour orchestrer les transactions de type saga. Nous évitons les moteurs de workflow comme **Camunda** en raison de leur lourdeur. Mettre en place un microservice orchestrateur est une autre option, mais elle peut s’avérer très complexe et sujette à erreurs.
+
+### API Gateway : GraphQL
+
+Le front communiquera avec l’API Gateway en utilisant **GraphQL**, qui permet d’éviter l’over-fetching, de bénéficier d’un schéma typé, et de souscrire aux mises à jour de données en temps réel.
