@@ -1,60 +1,65 @@
 ```mermaid
 ---
-title: Diagramme de Conteneurs - Plateforme de Réservation d'Événements
+title: Diagramme de Conteneurs Révisé - Plateforme de Réservation
 ---
 C4Container
-    title Diagramme de Conteneurs - Plateforme de Réservation d'Événements
+    title Diagramme de Conteneurs - Architecture Microservices avec Saga
 
-    Person_Ext(visiteur, "Visiteur", "Consulte les événements")
-    Person_Ext(utilisateur, "Utilisateur", "Réserve des billets")
-    Person_Ext(organisateur, "Organisateur", "Gère les événements")
-    Person_Ext(admin, "Administrateur", "Gère la plateforme")
+    Person(visiteur, "Visiteur", "Personne consultant les événements disponibles")
+    Person(utilisateur, "Utilisateur", "Personne créant un compte pour réserver des événements")
+    Person(organisateur, "Organisateur", "Personne ou entreprise créant et gérant des événements")
+
 
     System_Boundary(system, "Plateforme de Réservation") {
-        Container(web_app, "Application Web", "Angular", "Frontend pour visiteurs/organisateurs")
-        Container(mobile_app, "Application Mobile", "Flutter", "Frontend mobile pour utilisateurs")
-        Container(landing_page, "Landing Page", "Angular SSR", "Site vitrine optimisé SEO")
-        Container(admin_dashboard, "Dashboard Admin", "Angular", "Interface d'administration")
+        Container(web_app, "Application Web", "Angular", "Frontend principal")
+        Container(mobile_app, "Application Mobile", "Flutter", "Frontend mobile")
+
+        Container(api_gateway, "API Gateway", "Java", "Gestion des requêtes externes")
+        Container(auth_service, "Service Authentification", "Keycloak", "Gestion des identités")
         
-        Container(auth_service, "Service Authentification", "Keycloak", "Gestion des identités et accès")
         Container(booking_service, "Service Réservation", "Go", "Gestion des réservations")
-        Container(payment_service, "Service Paiement", "Java + Stripe", "Traitement des transactions")
-        Container(search_service, "Service Recherche", "Typesense", "Moteur de recherche d'événements")
-        Container(notif_service, "Service Notification", "Novu", "Gestion des notifications multi-canaux")
+        ContainerDb(booking_db, "Réservation DB", "PostgreSQL", "Stocke les réservations")
         
-        Container(metabase, "Tableaux de Bord", "Metabase", "Visualisation des données métiers")
+        Container(payment_service, "Service Paiement", "Java", "Traitement des paiements")
+        ContainerDb(payment_db, "Paiement DB", "PostgreSQL", "Stocke les transactions financières")
         
-        ContainerDb(postgres, "Bases de Données", "PostgreSQL", "Stockage des données transactionnelles")
-        ContainerDb(typesense_db, "Index Recherche", "Typesense", "Base dédiée aux recherches")
-        ContainerDb(reservation_db, "Bases de Données", "PostgreSQL", "Bases de données réservation")
+        Container(notif_service, "Service Notification", "Novu", "Notifications multi-canaux")
+        
+        Container(search_service, "Service Recherche", "Typesense", "Recherche d'événements")
+        
+        Container(saga_orchestrator, "Orchestrateur Saga", "AWS Step Functions", "Coordonne les transactions distribuées")
     }
 
-    System_Ext(stripe, "Stripe", "Système de paiement")
-    System_Ext(oauth, "Providers OAuth", "Google/Facebook/Apple")
-    System_Ext(sms_provider, "Fournisseur SMS", "Envoi de SMS")
-    System_Ext(email_provider, "Fournisseur Email", "Envoi d'emails")
+    System_Ext(stripe, "Stripe", "Passerelle de paiement")
+    System_Ext(sms_provider, "Fournisseur SMS", "Twilio")
 
-    Rel(visiteur, landing_page, "Consulte les événements", "HTTPS")
-    Rel(visiteur, web_app, "Navigue sur la plateforme", "HTTPS")
-    Rel(utilisateur, mobile_app, "Réserve via mobile", "HTTPS")
-    Rel(organisateur, web_app, "Gère ses événements", "HTTPS")
-    Rel(admin, admin_dashboard, "Administre la plateforme", "HTTPS")
+    Rel(visiteur, web_app, "consulter les événements", "HTTPS")
+    Rel(utilisateur, web_app, "Réserve des événements", "HTTPS")
+    Rel(organisateur, web_app, "Gère les événements", "HTTPS")
+    
+    Rel(visiteur, mobile_app, "consulter les événements", "HTTPS")
+    Rel(utilisateur, mobile_app, "Réserve des événements", "HTTPS")
+    Rel(organisateur, mobile_app, "Gère les événements", "HTTPS")
 
-    Rel(web_app, auth_service, "Authentifie les utilisateurs", "REST/HTTPS")
-    Rel(mobile_app, auth_service, "Authentifie les utilisateurs", "REST/HTTPS")
-    Rel(web_app, booking_service, "Effectue des réservations", "gRPC")
-    Rel(booking_service, payment_service, "Initie les paiements", "Event-Driven")
-    Rel(payment_service, stripe, "Processus les paiements", "API Stripe")
-    Rel(auth_service, oauth, "Intègre l'authentification sociale", "OAuth2")
+    Rel(web_app, api_gateway, "Créer réservation", "GraphQL")
+    Rel(mobile_app, api_gateway, "Créer réservation", "GraphQL")
 
-    Rel(web_app, search_service, "Recherche d'événements", "GraphQL")
-    Rel(search_service, typesense_db, "Stocke/query l'index", "Typesense API")
-    Rel(booking_service, reservation_db, "Query les données", "SQL")
-    Rel(notif_service, sms_provider, "Envoie des SMS", "API SMS")
-    Rel(notif_service, email_provider, "Envoie des emails", "SMTP/API")
+    Rel(api_gateway, saga_orchestrator, "Créer réservation", "GraphQL")
+    Rel(api_gateway, booking_service, "récupérer réservations", "GraphQL")
+    Rel(api_gateway, payment_service, "récupérer transactions", "GraphQL")
+    Rel(api_gateway, notif_service, "notifier", "REST")
+    Rel(api_gateway, auth_service, "s'authentifier", "REST")
+    
+    Rel(saga_orchestrator, payment_service, "Déclenche paiement", "gRPC")
+    Rel(payment_service, stripe, "Processus paiement", "API")
+    
+    Rel(saga_orchestrator, notif_service, "Déclenche notification", "gRPC")
+    Rel(notif_service, sms_provider, "Envoie SMS", "API")
+    
+    Rel(saga_orchestrator, booking_service, "Confirme réservation", "gRPC")
+    
+    Rel(booking_service, booking_db, "Read/Write", "SQL")
+    Rel(payment_service, payment_db, "Read/Write", "SQL")
 
-    Rel(admin_dashboard, metabase, "Consulte les analytics", "Embedded")
-    Rel(metabase, postgres, "Query les données", "SQL")
-
-    UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```

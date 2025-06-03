@@ -33,10 +33,14 @@ En nous basant sur les hypothèses posées (budget conséquent et maturité de l
 | **Service Réservation**  | Go + PostgreSQL                        |
 | **Service Paiement**     | Java + Stripe + PostgreSQL             |
 | **Application Mobile**   | Flutter                                |
-| **Application Web**      | Angular SSR (landing), Angular (admin) |
+| **Application Web**      | Angular SSR (landing + admin)          |
 | **Data visualization**   | Metabase                               |
-| **Monitoring**           | AWS CloudWatch                         |
+| **Monitoring**           | AWS CloudWatch + Prometheus/Grafana    |
 | **Sécurité**             | AWS WAF                                |
+| **CI/CD**                | GitHub Actions + AWS EKS               |
+| **Sagas Orchestration**  | AWS Step Functions                     |
+| **API Gateway**          | Java + GraphQL                         |
+| **Système de cache**     | Redis                                  |
 
 ### Cloud provider : AWS
 
@@ -62,11 +66,9 @@ Le service de réservation est un microservice critique pouvant connaître des p
 
 Le service de paiement est un microservice très sensible. Nous avons opté pour **Java** et **PostgreSQL**, des technologies robustes, largement utilisées et faciles à intégrer avec des solutions existantes. **Stripe** est une infrastructure financière très flexible, facile à prendre en main, et bien adaptée à notre modèle économique.
 
-### Application web : landing page (Angular SSR)
+### Application web : landing page + admin dashboard (Angular)
 
 Pour la landing page, il faut optimiser les métriques **Core Web Vitals**. Nous allons donc utiliser une technologie intégrant le SSR (Server Side Rendering), le lazy loading, le caching, etc., ce qui est disponible avec **Angular**. L’utilisation de CDN permet également d’améliorer les performances.
-
-### Application web : admin dashboard (Angular)
 
 L’interface des organisateurs sera une application web pouvant croître en complexité (dashboard, gestion de comptes, notifications, comptabilité, etc.). Il nous faut une technologie avec un écosystème complet, une structure rigoureuse, et un state management robuste. **Angular** est un bon choix car il répond à tous ces critères, contrairement à des alternatives comme **React**, qui n’offrent pas de structure rigide et laissent ces choix au développeur.
 
@@ -99,6 +101,6 @@ Pour le CD, nous utiliserons **AWS EKS**, très compatible avec nos microservice
 
 Nous allons utiliser **AWS Step Functions** pour orchestrer les transactions de type saga. Nous évitons les moteurs de workflow comme **Camunda** en raison de leur lourdeur. Mettre en place un microservice orchestrateur est une autre option, mais elle peut s’avérer très complexe et sujette à erreurs.
 
-### API Gateway : GraphQL
+### API Gateway : Java + GraphQL
 
-Le front communiquera avec l’API Gateway en utilisant **GraphQL**, qui permet d’éviter l’over-fetching, de bénéficier d’un schéma typé, et de souscrire aux mises à jour de données en temps réel.
+Le front communiquera avec l’API Gateway en utilisant **Java** avec **GraphQL**, qui permet d’éviter l’over-fetching, de bénéficier d’un schéma typé, et de souscrire aux mises à jour de données en temps réel.
