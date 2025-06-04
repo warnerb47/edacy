@@ -2,10 +2,10 @@
 Nous allons utilser C4 model pour schématiser nos composants et leurs intéractions
 
 ## Legende
-<img src="./c4/images/png/legend.png"/>
+![legend](./c4/images/legend.png)
 
 ## Diagramme de contexte
-<img src="./c4/images/png/context.png"/>
+![context](./c4/images/context.png)
 
 ## Diagramme de container
-<img src="./c4/images/png/container.png"/>
+![container](./c4/images/container.png)
